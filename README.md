@@ -1,35 +1,35 @@
 # Komari maintenance fork
 
-Based on upstream Komari **1.5.1**, commit `f0cc0fba38ce161935372633cae5248c934e2b23`.
-Maintained by [yinpengfei](https://github.com/yinpengfei). Upstream: [komari-monitor/komari](https://github.com/komari-monitor/komari).
-Original MIT license and copyright notices are retained.
+Current stable release: **1.5.2**, published and built on 2026-10-21. Based on upstream Komari 1.5.1 with privacy and maintenance-link changes. Original MIT license and copyright notices are retained.
+
+- **[Installation, upgrades, backup/restore, and release maintenance (Chinese)](INSTALL_MAINTENANCE.md)**
+- [Chinese README](README_zh-cn.md)
+- [Server 1.5.2 downloads](https://github.com/yinpengfei/komari/releases/tag/1.5.2): 8 platform binaries
+- [Agent 1.5.2 downloads](https://github.com/yinpengfei/komari-agent/releases/tag/1.5.2): 14 platform binaries
+- [Privacy review](PRIVACY_REVIEW.md)
+
+Docker images (amd64/arm64): `ghcr.io/yinpengfei/komari:1.5.2` and `ghcr.io/yinpengfei/komari-agent:1.5.2`. The `latest` tags follow future stable releases; pin versions for controlled upgrades.
+
+## Installation
+
+For systemd Linux, download the installer from this fork:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/yinpengfei/komari/1.5.2/install-komari.sh -o install-komari.sh
+sudo bash install-komari.sh
+```
+
+Select **Standard / Stable**. This downloads this fork's latest stable binary, currently 1.5.2; a pinned script URL does not pin its latest-release download. For exact-version installation, use the pinned Compose image or release asset described in the guide. The optional Lite edition is maintained by another project and is outside this review.
+
+New installations disable online GeoIP and automatic third-party market catalog requests. Existing saved settings are retained: review GeoIP, market sources, extensions, notifications, and OAuth after upgrading. Third-party Office previews and default Agent public-IP lookups are disabled. Agent auto-update remains enabled unless explicitly disabled.
+
+Back up the full data directory and deployment configuration before upgrading. An installer binary backup alone is not a data backup. Existing upstream programs must be replaced with this fork's binaries/images to receive these changes.
 
 ## Repositories
 
 - [Server](https://github.com/yinpengfei/komari/tree/maint/1.5.1)
-- [Frontend](https://github.com/yinpengfei/komari-web/tree/maint/1.5.1), based on the upstream server release's `1.5.0-fix1` frontend.
+- [Frontend](https://github.com/yinpengfei/komari-web/tree/maint/1.5.1), based on the upstream server release's 1.5.0-fix1 frontend
 - [Agent](https://github.com/yinpengfei/komari-agent/tree/maint/1.5.1)
-- [Server releases](https://github.com/yinpengfei/komari/releases)
-- [Privacy review](PRIVACY_REVIEW.md)
+- [Upstream server](https://github.com/komari-monitor/komari)
 
-## Installation / 安装
-
-This fork must publish its own release assets before installation works. Do not use upstream binaries expecting these changes.
-本仓库需先发布自己的二进制版本；上游二进制不包含本分支的隐私改动。
-
-```sh
-curl -fsSL https://raw.githubusercontent.com/yinpengfei/komari/refs/heads/maint/1.5.1/install-komari.sh -o install-komari.sh
-# Review the downloaded script, then run it / 检查脚本后运行
-sudo bash install-komari.sh
-```
-
-The Standard edition downloads from `yinpengfei/komari`. The installer also offers an explicitly selected third-party Lite edition, which is outside this review.
-标准版从本仓库下载。安装器中主动选择的第三方 Lite 版不在此次审查范围内。
-Docker images, once published: `ghcr.io/yinpengfei/komari:<release-tag>`.
-
-## Privacy defaults / 隐私默认设置
-
-New installations disable online GeoIP and automatic third-party market catalog requests. Existing saved settings are retained: disable GeoIP manually or choose local MMDB, and review market sources.
-新安装默认关闭在线 GeoIP，主题和插件市场的上游源默认不启用。已有数据库的设置不会自动覆盖，请手动关闭 GeoIP 或选择本地 MMDB，并检查市场源。
-Office Online preview is disabled because it shares a temporary download URL and file content with Microsoft. Download Office files to view them locally.
-Office 在线预览已关闭，请下载后本地查看。
+The maintenance branch remains `maint/1.5.1` (the development baseline); stable release version is 1.5.2. Server and Agent default branches remain `main`; the frontend default remains `radix`. Read current maintenance docs via the maintenance-branch links. Published tags and binaries are unchanged by documentation updates.
