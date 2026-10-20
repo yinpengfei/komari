@@ -23,12 +23,7 @@ jobs:
         env:
           TAG: ${{ github.event.release.tag_name }}
         run: |
-          frontend_ref=""
-          if [[ "$TAG" == "1.5.1" || "$TAG" == "1.5.1-rc1" ]]; then
-            frontend_ref="1.5.0-fix1"
-          elif [[ "$TAG" =~ ^(.+)-fix[0-9]+$ ]]; then
-            frontend_ref="${BASH_REMATCH[1]}"
-          fi
+          frontend_ref="525933e3cacfa0fd35d614d478c0d52622c58bcc"
           echo "frontend_ref=$frontend_ref" >> "$GITHUB_OUTPUT"
 
   build-frontend:
@@ -104,7 +99,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.23"
+          go-version-file: go.mod
 
       - name: Install Zig cross-compiler toolchain
         uses: ./.github/actions/setup-zig

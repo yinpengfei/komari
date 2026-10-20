@@ -75,7 +75,7 @@ func defaultPluginMarketSources() []PluginMarketSource {
 		ID:      "official",
 		Name:    "Komari Official",
 		URL:     defaultPluginMarketURL,
-		Enabled: true,
+		Enabled: false,
 	}}
 }
 

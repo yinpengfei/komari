@@ -21,7 +21,7 @@ type Settings struct {
 	EulaAccepted           bool   `json:"eula_accepted" default:"false"`
 	BaseScriptsURLKey      string `json:"base_scripts_url" default:""`
 	// GeoIP 配置
-	GeoIpEnabled  bool   `json:"geo_ip_enabled" default:"true"`
+	GeoIpEnabled  bool   `json:"geo_ip_enabled" default:"false"`
 	GeoIpProvider string `json:"geo_ip_provider" default:"ipinfo"` // empty, mmdb, ip-api, geojs
 	// OAuth 配置
 	OAuthEnabled         bool   `json:"o_auth_enabled" default:"false"`

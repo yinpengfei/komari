@@ -77,7 +77,7 @@ func defaultThemeMarketSources() []ThemeMarketSource {
 		ID:      "official",
 		Name:    "Komari Official",
 		URL:     defaultThemeMarketURL,
-		Enabled: true,
+		Enabled: false,
 	}}
 }
 
