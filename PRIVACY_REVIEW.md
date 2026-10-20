@@ -56,3 +56,7 @@
 - Agent server 全包测试中的 ICMP/TCP/HTTP 外网连通性用例因目标 DNS、IPv6 连通性和 Windows ICMP 支持失败，不能宣称全套测试通过。
 - shell 安装脚本与 PowerShell 安装脚本语法检查通过，24 个工作流/action YAML 文件解析通过。
 - 此轮源码审查当时尚未发布版本。2026-10-21 已完成 1.5.2 Release/镜像发布；仍未更新任何生产部署，未做运行时抓包及完整依赖审计。
+
+## Agent 1.5.3 后续变更（2026-10-21）
+
+以上默认关闭公网 IP 查询的结论描述 1.5.2。按维护者选择，Agent 1.5.3 恢复默认 HTTPS ipify 查询，IPv6 优先本地网卡、缺失才补查；IPv4 通过 ipify 查询。查询不携带面板 Token、主机名或硬件数据，但服务商能看到出口 IP 和访问时间。可用 `--allow-external-ip-lookup=false`、对应环境变量或 JSON 显式关闭；已有 false 配置继续生效。关闭后仍可从网卡取得公网候选 IPv6。手动地址最高优先级。网卡地址只做范围筛选，不验证互联网连通性。详见 [Agent 隐私说明](https://github.com/yinpengfei/komari-agent/blob/maint/1.5.1/PRIVACY.md)。服务端版本与设置未因此改变。

@@ -1,17 +1,17 @@
-# 1.5.2 安装与维护
+# 安装与维护：服务端 1.5.2 / Agent 1.5.3
 
-更新日期：2026-10-21。本文对应 **yinpengfei 维护版 1.5.2**，基于上游服务端 1.5.1 加入隐私与维护链接调整。
+更新日期：2026-10-21。本文对应 **yinpengfei 服务端 1.5.2 / Agent 1.5.3**，基于上游服务端 1.5.1 加入隐私与维护链接调整。
 
 ## 版本与下载入口
 
 | 组件 | 正式版本 | 下载 |
 |---|---|---|
 | 服务端（含前端） | 1.5.2 | [8 个平台安装包](https://github.com/yinpengfei/komari/releases/tag/1.5.2) |
-| Agent | 1.5.2 | [14 个平台安装包](https://github.com/yinpengfei/komari-agent/releases/tag/1.5.2) |
+| Agent | 1.5.3 | [14 个平台安装包](https://github.com/yinpengfei/komari-agent/releases/tag/1.5.3) |
 | 服务端镜像 | 1.5.2 | `ghcr.io/yinpengfei/komari:1.5.2` |
-| Agent 镜像 | 1.5.2 | `ghcr.io/yinpengfei/komari-agent:1.5.2` |
+| Agent 镜像 | 1.5.3 | `ghcr.io/yinpengfei/komari-agent:1.5.3` |
 
-两种镜像均提供 amd64、arm64，并已发布 `latest`。固定版本部署使用 `:1.5.2`，`latest` 会随将来的正式发版变化。
+两种镜像均提供 amd64、arm64，并已发布 `latest`。固定版本部署分别使用服务端 `:1.5.2`、Agent `:1.5.3`，`latest` 会随将来的正式发版变化。
 
 源代码维护分支仍为 `maint/1.5.1`，名称表示开发基线，不代表当前发行版本停留在 1.5.1。服务端与 Agent 的默认分支保留 `main`，前端默认分支保留 `radix`；查看最新维护文档请使用本文的维护分支链接。已发布的 `1.5.2` 标签和安装包不随文档更新而改写。
 
@@ -94,9 +94,9 @@ chmod 755 komari
 ### Linux / macOS 脚本
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/yinpengfei/komari-agent/1.5.2/install.sh -o install-komari-agent.sh
+curl -fsSL https://raw.githubusercontent.com/yinpengfei/komari-agent/1.5.3/install.sh -o install-komari-agent.sh
 sudo bash install-komari-agent.sh \
-  --install-version 1.5.2 \
+  --install-version 1.5.3 \
   --endpoint 'https://你的面板域名' \
   --token '替换为后台生成的TOKEN'
 ```
@@ -108,8 +108,8 @@ Linux systemd 默认服务名是 `komari-agent`。自定义安装位置或服务
 以管理员身份打开 PowerShell，下载并运行：
 
 ```powershell
-Invoke-WebRequest 'https://raw.githubusercontent.com/yinpengfei/komari-agent/1.5.2/install.ps1' -OutFile .\install-komari-agent.ps1
-& .\install-komari-agent.ps1 --install-version 1.5.2 --endpoint 'https://你的面板域名' --token '替换为后台生成的TOKEN'
+Invoke-WebRequest 'https://raw.githubusercontent.com/yinpengfei/komari-agent/1.5.3/install.ps1' -OutFile .\install-komari-agent.ps1
+& .\install-komari-agent.ps1 --install-version 1.5.3 --endpoint 'https://你的面板域名' --token '替换为后台生成的TOKEN'
 Get-Service komari-agent
 ```
 
@@ -120,16 +120,21 @@ Get-Service komari-agent
 | 需求 | 参数 / 行为 |
 |---|---|
 | 使用指定 IP | `--custom-ipv4 'IP地址'` / `--custom-ipv6 'IP地址'` |
-| 从网卡读取 | `--get-ip-addr-from-nic`，可能读到私网或 NAT 地址 |
-| 启用第三方公网 IP 查询 | 主动添加 `--allow-external-ip-lookup`，会访问 HTTPS ipify |
+| 默认自动获取 | IPv4 查询 HTTPS ipify；IPv6 优先读取网卡公网候选，缺失才查询 IPv6 ipify |
+| 显式网卡模式 | `--get-ip-addr-from-nic`，保留原行为：可能读到私网地址，找到任意一种地址就返回 |
+| 关闭第三方公网 IP 查询 | `--allow-external-ip-lookup=false`；仍可读取本地网卡公网 IPv6 |
 | 固定版本并关闭自动更新 | 添加 `--disable-auto-update` |
 | 不需要网页终端、远程命令和文件控制 | 添加 `--disable-web-ssh` |
 
-默认不开启第三方 IP 探测；面板仍可观察 Agent 的连接源 IP。安装版本固定为 1.5.2 后，若不关闭自动更新，Agent 仍会在启动和每 6 小时检查本 Fork 的同一 `1.5.*` 版本线。容器内不执行二进制自更新，应拉取和重建镜像。
+Agent 1.5.3 默认允许缺失地址通过 ipify 补齐（1.5.2 默认关闭）。手动 IP 优先；自动 IPv6 只选择已启用、非回环网卡上的公网候选，过滤本地及特殊用途地址。多个候选按网卡名、地址数值稳定选择，遵守现有网卡筛选规则（include 显式匹配优先于 exclude）。网卡地址不保证互联网连通性或与实际出口一致。IPv6 查询失败时留空，下一次基础信息更新重试，默认每 5 分钟。
+
+关闭外部查询也可使用环境变量 `AGENT_ALLOW_EXTERNAL_IP_LOOKUP=false` 或 JSON `"allow_external_ip_lookup": false`，升级后已有 false 仍生效；需要恢复查询时修改实际生效的配置。配置优先级为默认值 < 命令行 < 环境变量 < JSON。仅升级 Agent 即可修复默认 IP 显示，无需升级服务端。完整选址规则见 [Agent 参数说明](https://github.com/yinpengfei/komari-agent/blob/maint/1.5.1/readme.md#153-的-ip-获取规则)。
+
+面板仍可观察 Agent 的连接源 IP。安装版本固定为 1.5.3 后，若不关闭自动更新，Agent 仍会在启动和每 6 小时检查本 Fork 的同一 `1.5.*` 版本线。容器内不执行二进制自更新，应拉取和重建镜像。
 
 ## 从已有版本升级
 
-先备份，再更新服务端，再更新 Agent。首次迁移到本 Fork 时，必须使用本 Fork 的镜像或安装包；已运行的上游 Agent 不会因为仓库链接改动就自动切换更新源。
+先备份，再按需更新服务端与 Agent。本次 Agent 1.5.3 的 IP 修复无需更新服务端。首次迁移到本 Fork 时，必须使用本 Fork 的镜像或安装包；已运行的上游 Agent 不会因为仓库链接改动就自动切换更新源。
 
 ### Docker Compose
 
@@ -189,8 +194,8 @@ curl -fsS http://127.0.0.1:25774/api/version
 
 1. 在三个仓库各自的 `maint/1.5.1` 分支开发，保留原 `main`，不要直接把上游 main 同步到维护分支。
 2. 前端变更提交并验证构建后，更新服务端 `.github/actions/build-frontend/action.yml` 的默认 ref 和 `.github/workflows/release.yml` 的 `frontend_ref`，都固定到审核过的前端提交。
-3. 服务端与 Agent 分别创建新的正式 Release，例如 `1.5.3`，目标选择对应维护分支。Agent 不勾选预发布。先确认仓库 Actions 已启用。
+3. 服务端与 Agent 分别创建新的正式 Release，目标选择对应维护分支。Agent 不勾选预发布。先确认仓库 Actions 已启用。
 4. 发布会触发安装包和镜像构建。服务端包含固定前端，无需先独立发布前端主题包。检查 Actions 全部成功、Release 附件齐全、镜像版本标签与 `latest`，再部署。
 5. 本次 Agent 的历史发布发生在 Actions 启用前，已通过现有 `snapshot.yml` 手动入口补打包成功。维护分支上的该手动入口**只重打包 1.5.2**，不创建 Snapshot 版本；不要把它当成其他版本的发布入口。今后的正常正式发版使用第 3 步。
 
-当前 1.5.2 构建记录：[服务端](https://github.com/yinpengfei/komari/actions/runs/39454034246)、[Agent](https://github.com/yinpengfei/komari-agent/actions/runs/39455281125)。两次均成功；这不代表已经更新任何线上部署。
+历史 1.5.2 构建记录：[服务端](https://github.com/yinpengfei/komari/actions/runs/39454034246)、[Agent](https://github.com/yinpengfei/komari-agent/actions/runs/39455281125)。两次均成功；这不代表已经更新任何线上部署。
